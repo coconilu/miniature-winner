@@ -11,6 +11,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@opentiny/vue": "3",
     "nuxt": "^3.13.0",
     "vue": "latest",
     "vue-router": "latest"
