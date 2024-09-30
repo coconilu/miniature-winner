@@ -2,7 +2,7 @@
   <div class="column overview-page">
     <div class="overview-page-header">
       <img
-        src="assets/imgs/overview_header.png"
+        src="imgs/overview_header.png"
         alt=""
         srcset=""
         class="overview-page-header-pic"
