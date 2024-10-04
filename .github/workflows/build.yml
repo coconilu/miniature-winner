@@ -1,0 +1,45 @@
+name: Build and Deploy Nuxt.js Project
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.17.0]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build the project
+        run: pnpm run build
+
+      # - name: Generate static files
+      #   run: pnpm run generate
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: static-files
+          path: dist/
