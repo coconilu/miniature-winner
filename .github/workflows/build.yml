@@ -52,3 +52,16 @@ jobs:
           # name: static-files
           # path: .output/
           # path: dist/
+
+      - name: Upload to Aliyun OSS
+        env:
+          ALIYUN_ACCESS_KEY_ID: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
+          ALIYUN_ACCESS_KEY_SECRET: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+        run: |
+          python -c "
+          import oss2
+          auth = oss2.Auth('${{ secrets.ALIYUN_ACCESS_KEY_ID }}', '${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}')
+          bucket = oss2.Bucket(auth, 'oss-cn-beijing.aliyuncs.com', 'nuxt3-server-pack')
+          with open('output.tar.gz', 'rb') as fileobj:
+              bucket.put_object('output.tar.gz', fileobj)
+          "
