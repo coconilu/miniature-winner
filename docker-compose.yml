@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: .
+      target: dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.nuxt
+    ports:
+      - "7566:3000"
+    environment:
+      - NODE_ENV=development
+      - NITRO_UNIX_SOCKET=0
+      - HOST=0.0.0.0
+    restart: unless-stopped

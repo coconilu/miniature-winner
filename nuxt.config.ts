@@ -22,14 +22,14 @@ export default defineNuxtConfig({
     },
     //...
   ],
-  routeRules: {
-    "/": { redirect: "/overview" },
-  },
   vite: {
     vue: {
       template: {
         transformAssetUrls,
       },
     },
+  },
+  nitro: {
+    unixSocketPath: false,
   },
 });

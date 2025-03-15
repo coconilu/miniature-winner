@@ -3,8 +3,7 @@
     <div class="overview-page-header">
       <img
         src="imgs/overview_header.png"
-        alt=""
-        srcset=""
+        alt="概览头图"
         class="overview-page-header-pic"
       />
     </div>

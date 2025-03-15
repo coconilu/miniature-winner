@@ -5,10 +5,22 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
-    "dev2": "nuxt dev --host",
+    "dev:host": "nuxt dev --host",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "docker:up": "docker-compose up -d",
+    "docker:logs": "docker-compose logs -f",
+    "docker:down": "docker-compose down",
+    "docker:restart": "docker-compose restart",
+    "docker:build": "docker-compose up -d --build",
+    "docker:clean": "docker-compose down && docker volume prune -f && docker-compose up -d --build",
+    "docker:prod:up": "docker-compose -f docker-compose.prod.yml up -d",
+    "docker:prod:logs": "docker-compose -f docker-compose.prod.yml logs -f",
+    "docker:prod:down": "docker-compose -f docker-compose.prod.yml down",
+    "docker:prod:restart": "docker-compose -f docker-compose.prod.yml restart",
+    "docker:prod:build": "docker-compose -f docker-compose.prod.yml up -d --build",
+    "docker:prod:clean": "docker-compose -f docker-compose.prod.yml down && docker volume prune -f && docker-compose -f docker-compose.prod.yml up -d --build"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
