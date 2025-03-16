@@ -12,6 +12,7 @@
     "docker:up": "docker-compose up -d",
     "docker:logs": "docker-compose logs -f",
     "docker:down": "docker-compose down",
+    "docker:reopen": "docker-compose down && docker-compose up -d",
     "docker:restart": "docker-compose restart",
     "docker:build": "docker-compose up -d --build",
     "docker:clean": "docker-compose down && docker volume prune -f && docker-compose up -d --build",
