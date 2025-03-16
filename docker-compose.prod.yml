@@ -1,8 +1,13 @@
+version: "3.8"
+
 services:
   app:
     build:
       context: .
       target: production
+      dockerfile: Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
     ports:
       - "7566:3000"
     environment:
@@ -23,3 +28,10 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+    volumes:
+      - node_modules:/app/node_modules
+
+volumes:
+  # 持久化 node_modules
+  node_modules:
+    name: app-node-modules

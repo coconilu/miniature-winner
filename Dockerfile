@@ -1,33 +1,5 @@
-# 构建阶段
-FROM node:20.12.1-alpine AS build
-
-# 设置工作目录
-WORKDIR /app
-
-# 安装pnpm
-RUN corepack enable && corepack prepare pnpm@9.12.3 --activate
-
-# 设置 pnpm 存储位置
-ENV PNPM_HOME="/pnpm-store"
-RUN mkdir -p $PNPM_HOME
-
-# 复制package.json和pnpm-lock.yaml
-COPY package.json pnpm-lock.yaml ./
-COPY .npmrc ./
-
-# 安装依赖，使用挂载的缓存卷
-RUN --mount=type=cache,target=/pnpm-store \
-    pnpm config set store-dir /pnpm-store && \
-    pnpm install --frozen-lockfile
-
-# 复制源代码
-COPY . .
-
-# 构建应用
-RUN pnpm build
-
-# 开发阶段
-FROM node:20.12.1-alpine AS dev
+# 依赖安装阶段 - 共享基础
+FROM node:20.12.1-alpine AS deps
 
 # 设置工作目录
 WORKDIR /app
@@ -44,9 +16,61 @@ COPY package.json pnpm-lock.yaml ./
 COPY .npmrc ./
 
 # 安装所有依赖（包括开发依赖），使用挂载的缓存卷
-RUN --mount=type=cache,target=/pnpm-store \
+RUN --mount=type=cache,target=/pnpm-store,id=pnpm-store \
     pnpm config set store-dir /pnpm-store && \
     pnpm install --frozen-lockfile
+
+# 生产依赖安装阶段
+FROM node:20.12.1-alpine AS deps-prod
+
+# 设置工作目录
+WORKDIR /app
+
+# 安装pnpm
+RUN corepack enable && corepack prepare pnpm@9.12.3 --activate
+
+# 设置 pnpm 存储位置
+ENV PNPM_HOME="/pnpm-store"
+RUN mkdir -p $PNPM_HOME
+
+# 复制package.json和pnpm-lock.yaml
+COPY package.json pnpm-lock.yaml ./
+COPY .npmrc ./
+
+# 仅安装生产依赖，使用挂载的缓存卷
+RUN --mount=type=cache,target=/pnpm-store,id=pnpm-store \
+    pnpm config set store-dir /pnpm-store && \
+    pnpm install --frozen-lockfile --prod
+
+# 构建阶段
+FROM node:20.12.1-alpine AS build
+
+# 设置工作目录
+WORKDIR /app
+
+# 安装pnpm
+RUN corepack enable && corepack prepare pnpm@9.12.3 --activate
+
+# 从依赖阶段复制node_modules
+COPY --from=deps /app/node_modules ./node_modules
+
+# 复制源代码
+COPY . .
+
+# 构建应用
+RUN pnpm build
+
+# 开发阶段
+FROM node:20.12.1-alpine AS dev
+
+# 设置工作目录
+WORKDIR /app
+
+# 安装pnpm
+RUN corepack enable && corepack prepare pnpm@9.12.3 --activate
+
+# 从依赖阶段复制node_modules
+COPY --from=deps /app/node_modules ./node_modules
 
 # 复制源代码
 COPY . .
@@ -68,18 +92,8 @@ WORKDIR /app
 # 安装pnpm
 RUN corepack enable && corepack prepare pnpm@9.12.3 --activate
 
-# 设置 pnpm 存储位置
-ENV PNPM_HOME="/pnpm-store"
-RUN mkdir -p $PNPM_HOME
-
-# 复制package.json和pnpm-lock.yaml
-COPY package.json pnpm-lock.yaml ./
-COPY .npmrc ./
-
-# 仅安装生产依赖，使用挂载的缓存卷
-RUN --mount=type=cache,target=/pnpm-store \
-    pnpm config set store-dir /pnpm-store && \
-    pnpm install --frozen-lockfile --prod
+# 从生产依赖阶段复制node_modules
+COPY --from=deps-prod /app/node_modules ./node_modules
 
 # 从构建阶段复制构建产物
 COPY --from=build /app/.output ./.output
