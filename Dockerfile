@@ -7,12 +7,18 @@ WORKDIR /app
 # 安装pnpm
 RUN corepack enable && corepack prepare pnpm@9.12.3 --activate
 
+# 设置 pnpm 存储位置
+ENV PNPM_HOME="/pnpm-store"
+RUN mkdir -p $PNPM_HOME
+
 # 复制package.json和pnpm-lock.yaml
 COPY package.json pnpm-lock.yaml ./
 COPY .npmrc ./
 
-# 安装依赖
-RUN pnpm install --frozen-lockfile
+# 安装依赖，使用挂载的缓存卷
+RUN --mount=type=cache,target=/pnpm-store \
+    pnpm config set store-dir /pnpm-store && \
+    pnpm install --frozen-lockfile
 
 # 复制源代码
 COPY . .
@@ -29,12 +35,18 @@ WORKDIR /app
 # 安装pnpm
 RUN corepack enable && corepack prepare pnpm@9.12.3 --activate
 
+# 设置 pnpm 存储位置
+ENV PNPM_HOME="/pnpm-store"
+RUN mkdir -p $PNPM_HOME
+
 # 复制package.json和pnpm-lock.yaml
 COPY package.json pnpm-lock.yaml ./
 COPY .npmrc ./
 
-# 安装所有依赖（包括开发依赖）
-RUN pnpm install --frozen-lockfile
+# 安装所有依赖（包括开发依赖），使用挂载的缓存卷
+RUN --mount=type=cache,target=/pnpm-store \
+    pnpm config set store-dir /pnpm-store && \
+    pnpm install --frozen-lockfile
 
 # 复制源代码
 COPY . .
@@ -56,12 +68,18 @@ WORKDIR /app
 # 安装pnpm
 RUN corepack enable && corepack prepare pnpm@9.12.3 --activate
 
+# 设置 pnpm 存储位置
+ENV PNPM_HOME="/pnpm-store"
+RUN mkdir -p $PNPM_HOME
+
 # 复制package.json和pnpm-lock.yaml
 COPY package.json pnpm-lock.yaml ./
 COPY .npmrc ./
 
-# 仅安装生产依赖
-RUN pnpm install --frozen-lockfile --prod
+# 仅安装生产依赖，使用挂载的缓存卷
+RUN --mount=type=cache,target=/pnpm-store \
+    pnpm config set store-dir /pnpm-store && \
+    pnpm install --frozen-lockfile --prod
 
 # 从构建阶段复制构建产物
 COPY --from=build /app/.output ./.output
