@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCommonStore } from '../stores/common'
+import { useCommonStore } from '@stores/common'
 
 // 使用 Pinia store
 const commonStore = useCommonStore()

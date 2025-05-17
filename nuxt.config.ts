@@ -8,6 +8,7 @@ export default defineNuxtConfig({
   alias: {
     "@": fileURLToPath(new URL("./src", import.meta.url)),
     imgs: fileURLToPath(new URL("./src/assets/imgs", import.meta.url)),
+    "@stores": fileURLToPath(new URL("./stores", import.meta.url)),
   },
   build: {
     transpile: ["vuetify"],
@@ -15,9 +16,8 @@ export default defineNuxtConfig({
   modules: [
     "@sentry/nuxt/module",
     "@pinia/nuxt",
-    (_options, nuxt) => {
-      nuxt.hooks.hook("vite:extendConfig", (config) => {
-        // @ts-expect-error
+    (_options: any, nuxt: any) => {
+      nuxt.hooks.hook("vite:extendConfig", (config: any) => {
         config.plugins.push(vuetify({ autoImport: true }));
       });
     },
