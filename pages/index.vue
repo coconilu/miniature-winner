@@ -2,8 +2,14 @@
   <div class="index-page">
     <h1>欢迎使用我们的应用</h1>
     <div class="navigation">
-      <NuxtLink to="/overview" class="nav-link">概览</NuxtLink>
-      <NuxtLink to="/dashboard" class="nav-link">仪表盘</NuxtLink>
+      <NuxtLink 
+        v-for="(entry, index) in entries" 
+        :key="index" 
+        :to="entry.path" 
+        class="nav-link"
+      >
+        {{ entry.title }}
+      </NuxtLink>
     </div>
     <p class="description">
       这是应用的首页。您可以通过上面的链接导航到不同的页面。
@@ -12,7 +18,11 @@
 </template>
 
 <script setup lang="ts">
-// 页面加载时的逻辑可以放在这里
+import { useCommonStore } from '../stores/common'
+
+// 使用 Pinia store
+const commonStore = useCommonStore()
+const entries = commonStore.getEntries
 </script>
 
 <style scoped>

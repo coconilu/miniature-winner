@@ -14,6 +14,7 @@ export default defineNuxtConfig({
   },
   modules: [
     "@sentry/nuxt/module",
+    "@pinia/nuxt",
     (_options, nuxt) => {
       nuxt.hooks.hook("vite:extendConfig", (config) => {
         // @ts-expect-error
@@ -30,6 +31,7 @@ export default defineNuxtConfig({
     },
   },
   nitro: {
+    // @ts-ignore - 忽略类型检查错误
     unixSocketPath: false,
   },
 });
